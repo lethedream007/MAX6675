@@ -66,12 +66,12 @@ MAX6675::MAX6675(uint8_t cs)
     Initializes & configures hardware SPI
 */
 /**************************************************************************/
-void MAX6675::begin(void)
+void MAX6675::begin(SPIClass *SPI_pointer)
 {
   pinMode(_cs, OUTPUT);
   digitalWrite(_cs, HIGH); //disables SPI interface for MAX6675, but it will initiate measurement/conversion
-
-  SPI.begin();             //setting hardware SCK, MOSI, SS to output, pull SCK, MOSI low & SS high      
+  MAXSPI = SPI_pointer;
+  MAXSPI->begin();             //setting hardware SCK, MOSI, SS to output, pull SCK, MOSI low & SS high      
 }
 
 /**************************************************************************/
@@ -172,15 +172,15 @@ uint16_t MAX6675::readRawData(void)
 
   delay(MAX6675_CONVERSION_TIME);
 
-  SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0)); //up to 4MHz, read MSB first, SPI mode 0, see note
+  MAXSPI->beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0)); //up to 4MHz, read MSB first, SPI mode 0, see note
 
   digitalWrite(_cs, LOW);                                          //set software CS low to enable SPI interface for MAX6675
 
-  rawData = SPI.transfer16(0x0000);                                //chip has read only SPI & MOSI not connected, so it doesn't metter what to send
+  rawData = MAXSPI->transfer16(0x0000);                                //chip has read only SPI & MOSI not connected, so it doesn't metter what to send
  
   digitalWrite(_cs, HIGH);                                         //disables SPI interface for MAX6675, but it will initiate measurement/conversion
 
-  SPI.endTransaction();                                            //de-asserting hardware CS & free hw SPI for other slaves
+  MAXSPI->endTransaction();                                            //de-asserting hardware CS & free hw SPI for other slaves
 
   return rawData;
 }
