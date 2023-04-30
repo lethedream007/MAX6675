@@ -59,9 +59,9 @@
 #include <avr/pgmspace.h>                  //use for PROGMEM Arduino STM32
 #endif
 
-#ifndef  MAX6675_SOFT_SPI                  //enable upload hw driver spi.h
+
 #include <SPI.h>
-#endif
+
 
 #define MAX6675_CONVERSION_TIME 220    //in milliseconds, sampling rate ~4...5Hz
 #define MAX6675_RESOLUTION      0.25   //in deg.C per dac step
@@ -75,7 +75,7 @@ class MAX6675
   public:
    MAX6675(uint8_t cs);
 
-            void     begin(void);
+            void     begin(SPIClass *SPI_pointer = &SPI);
             bool     detectThermocouple(uint16_t rawValue = MAX6675_FORCE_READ_DATA);
             uint16_t getChipID(uint16_t rawValue = MAX6675_FORCE_READ_DATA);
             float    getTemperature(uint16_t rawValue = MAX6675_FORCE_READ_DATA);
